@@ -119,12 +119,8 @@ class BluetoothCharacteristic {
           protos.WriteCharacteristicRequest_WriteType.valueOf(type.index)
       ..value = value;
 
-    var result = await FlutterBlue.instance._channel
+    await FlutterBlue.instance._channel
         .invokeMethod('writeCharacteristic', request.writeToBuffer());
-
-    if (type == CharacteristicWriteType.withoutResponse) {
-      return result;
-    }
 
     return FlutterBlue.instance._methodStream
         .where((m) => m.method == "WriteCharacteristicResponse")
@@ -140,7 +136,6 @@ class BluetoothCharacteristic {
         .then((success) => (!success)
             ? throw new Exception('Failed to write the characteristic')
             : null)
-        .then((_) => _value.add(value))
         .then((_) => null);
   }
 
